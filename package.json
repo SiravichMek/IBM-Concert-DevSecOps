@@ -1,0 +1,21 @@
+{
+  "name": "concert-demo",
+  "version": "1.0.0",
+  "description": "IBM Concert DevSecOps Demo Application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "ibm",
+    "concert",
+    "devsecops",
+    "sbom"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
