@@ -1,0 +1,51 @@
+##########################################################################
+# IBM Concert Build Configuration
+# spec_version: 1.0.2
+##########################################################################
+spec_version: "1.0.2"
+
+concert:
+  # builds is a required list of maps
+  builds:
+    # component_name is a required string
+  - component_name: "concert-demo"
+    
+    # output_file is an optional string (default: <component_name>-build-sbom.json)
+    # the absolute path to output_file inside the container will be /toolkit-data/<output_file>
+    output_file: "concert-build-sbom.json"
+    
+    # number is a required string (build number)
+    number: "${IMAGE_TAG}"
+    
+    # version is a required string
+    version: "1.0.0"
+    
+    # tags is an optional list of strings
+    tags:
+    - "environment:build"
+    - "ci:github-actions"
+    - "platform:docker"
+    
+    # image is a map (one of image OR library OR repositories is required)
+    # 'name' is always required
+    # either 'tag' OR 'digest' is required
+    image:
+      name: "${IMAGE_NAME}"
+      tag: "${IMAGE_TAG}"
+      digest: ""  # Will be populated after image is pushed
+      
+      # cyclonedx_bom_link is an optional map
+      # cyclonedx_bom_link requires either 'file' or 'data'
+      cyclonedx_bom_link:
+        # file is a path to a CycloneDX SBOM file
+        file: "/toolkit-data/concert-demo-sbom.json"
+    
+    # repositories is a list of maps
+    # each repository requires 'name', 'url', 'branch', and 'commit_sha'
+    repositories:
+    - name: "${GITHUB_REPOSITORY}"
+      url: "https://github.com/${GITHUB_REPOSITORY}"
+      branch: "${GITHUB_REF_NAME}"
+      commit_sha: "${GITHUB_SHA}"
+
+# Made with Bob

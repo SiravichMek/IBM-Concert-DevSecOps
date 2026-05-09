@@ -1,0 +1,180 @@
+##########################################################################
+# © IBM Confidential
+# PID:  5900-BD6, 5900-BBE
+# © Copyright IBM Corp. 2024
+##########################################################################
+# IBM Concert Deploy Configuration Sample
+# This is a reference sample showing all available options
+# spec_version is a required string
+# spec_version currently accepts: ["1.0.2"]
+spec_version: "1.0.2"
+
+concert:
+  # deployments is a required list of maps
+  deployments:
+    # output_file is an optional string (default: <component_index>-deploy-sbom.json)
+    # the absolute path to output_file inside the container will be /toolkit-data/<output_file>
+  - output_file: "concert-deploy-sbom.json"
+    
+    # metadata is an optional map
+    metadata:
+      # component_name is a required string
+      component_name: "concert-sample"
+      # number is a required string
+      number: "29"
+      # version is a required string
+      version: "1.0.0"
+    
+    # tags is an optional list of strings
+    tags:
+    - "tag-abc"
+    - "tag-xyz"
+    
+    # environment_target is a required string
+    environment_target: "staging"
+    
+    # change_request_url is an optional string
+    change_request_url: "https://github.com/concert-org/concert-sample-deployment/issues/142"
+    
+    # repositories is an optional list of maps
+    # each repository requires 'name' and 'url'
+    # 'branch' and 'commit_sha' are optional
+    repositories:
+    - name: "concert-sample-deployment"
+      url: "https://github.com/concert-org/concert-sample-deployment"
+      branch: "main"
+      commit_sha: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    
+    # services is an optional list of maps
+    # the keys 'type' and 'name' are required
+    # the key 'properties' is an optional map of any key-value pairs 
+    # currently only the type "app_access_point" is supported
+    services:
+    - type: "app_access_point"
+      name: "concert-sample"
+      properties: 
+        base_url: "https://concert-sample.internal.company.com/home"
+        network_exposure: "private"
+    
+    # runtime is an optional list of maps
+    # the keys 'name' and 'type' are required
+    # the key 'properties' is an optional map of any key-value pairs 
+    runtime:
+      # type "kubernetes" supports additional parameters: 'api-server', 'namespaces', 'depends_on'
+    - name: "ocp-cluster-1"
+      type: "kubernetes"
+      
+      # the key 'depends_on' is an optional list of service names that depend on this
+      depends_on: 
+      - "concert-sample"
+      
+      properties:
+        platform: "ocp"
+        cluster_platform: "ibmcloud"
+        cluster_id: "my-cluster"
+        cluster_region: "raleigh"
+        cluster_name: "mycluster"
+      
+      # api-server is a required string specifically for type "kubernetes"
+      api-server: http://cluster-a1b.ocp.internal.company.com:6443
+      
+      # namespaces is an optional list of maps specifically for type "kubernetes"
+      namespaces:
+        # name is required
+      - name: "concert-sample"
+        
+        # images is an optional list of maps
+        # 'name' is always required
+        # either 'tag' OR 'digest' is required
+        images:
+        - name: "icr.io/concert-namespace/concert-backend"
+          tag: "v1.0.0"
+          digest: "sha256:4f326f7b9e42603ad46e867aea866e02604b0abed3eb8ade148ffc1aab96962e"
+        
+        # libraries is an optional list of maps
+        # 'name' and 'version' are required
+        # 'purl', 'scope', 'filename', and 'url' are optional
+        libraries:
+        - name: "aux-service"
+          version: "1.0.0-SNAPSHOT"
+          scope: "tar"
+          filename: "aux-service-v1.0.0-SNAPSHOT-10.tar"
+          purl: "library:tar/ibm/concert/aux-service@1.0.0-SNAPSHOT-10.tar"
+          url: "https://artifactory.com/concert/aux-service-1.0.0-SNAPSHOT-10.tar"
+      
+      # type "vm" supports additional parameters: 'network', 'images', 'depends_on'
+    - name: "rhel-vm-1"
+      type: "vm"
+      
+      properties:
+        os: "RHEL"
+        version: "9.4"
+      
+      # the key 'depends_on' is an optional list of service names that depend on this
+      depends_on: 
+      - "concert-sample"
+      
+      # network is a required map specifically for type "vm"
+      network:
+        # hostname is a required string that represents the hostname for the VM
+        hostname: "vm-92x.rhel.internal.company.com"
+        # ipv4_addrs is an optional list of strings that represent IPv4 addresses for the VM
+        ipv4_addrs:
+        - "101.136.92.110"
+        # ipv6_addrs is an optional list of strings that represent IPv6 addresses for the VM
+        ipv6_addrs:
+        - "0d87:96f4:78ec:401b:d83d:5f35:d5fe:19bb"
+      
+      # images is an optional list of maps
+      # 'name' is always required
+      # either 'tag' OR 'digest' is required
+      images:
+      - name: "icr.io/concert-namespace/concert-manager"
+        tag: "v1.0.0"
+        digest: "sha256:963325e670dc7a8735d857647f887f8cd41a6f4035228d4b6c2c965b5ca744ce"
+      
+      # libraries is an optional list of maps
+      # 'name' and 'version' are required
+      # 'purl', 'scope', 'filename', and 'url' are optional
+      libraries:
+      - name: "network-binary"
+        version: "1.0.0-SNAPSHOT"
+        scope: "tar"
+        filename: "network-binary-v1.0.0-SNAPSHOT-10.tar"
+        purl: "library:tar/ibm/concert/network-binary@1.0.0-SNAPSHOT-10.tar"
+        url: "https://artifactory.com/concert/network-binary-1.0.0-SNAPSHOT-10.tar"
+      
+      # type "zOS" supports additional parameters: 'hostname', 'libraries', 'depends_on'
+    - name: "lpar_name"
+      type: "zOS"
+      
+      properties:
+        subsystem: "CICS"
+      
+      # the key 'depends_on' is an optional list of service names that depend on this
+      depends_on: 
+      - "concert-sample"
+      
+      # hostname is a required string specifically for type "zOS"
+      network:
+        # hostname is a required string that represents the hostname for the VM
+        hostname: "zos-92.z.company.com"
+        # ipv4_addrs is an optional list of strings that represent IPv4 addresses for the VM
+        ipv4_addrs:
+        - "115.63.78.130"
+        # ipv6_addrs is an optional list of strings that represent IPv6 addresses for the VM
+        ipv6_addrs:
+        - "549e:106c:ffba:5de1:1751:a77d:6f34:b588"
+      
+      # libraries is an optional list of maps
+      # 'name' and 'version' are required
+      # 'purl', 'scope', 'filename', and 'url' are optional
+      libraries:
+      - name: "mortgage-app"
+        version: "1.0.0-SNAPSHOT"
+        scope: "tar"
+        filename: "mortgage-app-v1.0.0-SNAPSHOT-10.tar"
+        purl: "library:tar/ibm/concert/mortgage-app@1.0.0-SNAPSHOT-10.tar"
+        url: "https://artifactory.com/concert/mortgage-app-1.0.0-SNAPSHOT-10.tar"
+
+# Made with Bob

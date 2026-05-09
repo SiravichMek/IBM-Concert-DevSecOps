@@ -1,0 +1,93 @@
+##########################################################################
+# © IBM Confidential
+# PID:  5900-BD6, 5900-BBE
+# © Copyright IBM Corp. 2024
+##########################################################################
+# IBM Concert Build Configuration Sample
+# This is a reference sample showing all available options
+# spec_version is a required string
+# spec_version currently accepts: ["1.0.2"]
+spec_version: "1.0.2"
+
+concert:
+  # builds is a required list of maps
+  builds:
+    # component_name is a required string
+  - component_name: "concert-frontend"
+    
+    # output_file is an optional string (default: <component_name>-build-sbom.json)
+    # the absolute path to output_file inside the container will be /toolkit-data/<output_file>
+    output_file: "concert-frontend-build-sbom.json"
+    
+    # number is a required string
+    number: "v1.0.0-84-20240410-200742"
+    
+    # version is a required string
+    version: "1.0.0"
+    
+    # tags is an optional list of strings
+    tags:
+    - "tag-abc"
+    - "tag-xyz"
+    
+    # one of image OR library OR repositories is required
+    # image and library are mutually exclusive
+
+    # image is a map
+    # 'name' is always required
+    # either 'tag' OR 'digest' is required
+    image:
+      name: "icr.io/concert-namespace/concert-frontend"
+      tag: "v1.0.0"
+      digest: "sha256:a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+      
+      # cyclonedx_bom_link is an optional map
+      # cyclonedx_bom_link requires either 'file' or 'data'
+      cyclonedx_bom_link:
+        # file is a path to a CycloneDX SBOM file
+        file: "/toolkit-data/concert-frontend-imagescan-cyclonedx-sbom.json"
+        # data requires 'serial_number' and 'version'
+        data:
+          serial_number: "urn:uuid:237d2e56-4793-411a-bbb0-f64ca792d43a"
+          version: "1"
+    
+    # library is a map
+    # 'name' and 'version' are required
+    # 'purl', 'scope', 'filename', and 'url' are optional
+    library:
+      name: "aux-service"
+      version: "1.0.0-SNAPSHOT"
+      scope: "tar"
+      filename: "aux-service-v1.0.0-SNAPSHOT-10.tar"
+      purl: "library:tar/ibm/concert/aux-service@1.0.0-SNAPSHOT-10.tar"
+      url: "https://artifactory.com/concert/aux-service-1.0.0-SNAPSHOT-10.tar"
+      
+      # cyclonedx_bom_link is an optional map
+      # cyclonedx_bom_link requires either 'file' or 'data'
+      cyclonedx_bom_link:
+        # file is a path to a CycloneDX SBOM file
+        file: "/toolkit-data/aux-service-codescan-cyclonedx-sbom.json"
+        # data requires 'serial_number' and 'version'
+        data:
+          serial_number: "urn:uuid:9814a4b4-3fad-421e-8f3b-382bac14df3b"
+          version: "1"
+    
+    # repositories is a list of maps
+    # each repository requires 'name', 'url', 'branch', and 'commit_sha'
+    repositories:
+    - name: "concert-frontend"
+      url: "github.com/concert-org/concert-frontend"
+      branch: "main"
+      commit_sha: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+      
+      # cyclonedx_bom_link is an optional map
+      # cyclonedx_bom_link requires either 'file' or 'data'
+      cyclonedx_bom_link:
+        # file is a path to a CycloneDX SBOM file
+        file: "/toolkit-data/concert-frontend-codescan-cyclonedx-sbom.json"
+        # data requires 'serial_number' and 'version'
+        data:
+          serial_number: "urn:uuid:a751f4a0-d685-4f54-a4df-e5b26dc94269"
+          version: "1"
+
+# Made with Bob

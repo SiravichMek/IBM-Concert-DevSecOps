@@ -1,0 +1,96 @@
+##########################################################################
+# IBM Concert Deploy Configuration
+# spec_version: 1.0.2
+##########################################################################
+spec_version: "1.0.2"
+
+concert:
+  # deployments is a required list of maps
+  deployments:
+    # output_file is an optional string (default: <component_index>-deploy-sbom.json)
+    # the absolute path to output_file inside the container will be /toolkit-data/<output_file>
+  - output_file: "concert-deploy-sbom.json"
+    
+    # metadata is an optional map
+    metadata:
+      # component_name is a required string
+      component_name: "concert-demo"
+      # number is a required string
+      number: "${GITHUB_RUN_NUMBER}"
+      # version is a required string
+      version: "1.0.0"
+    
+    # tags is an optional list of strings
+    tags:
+    - "environment:production"
+    - "ci:github-actions"
+    - "platform:kubernetes"
+    
+    # environment_target is a required string
+    environment_target: "production"
+    
+    # change_request_url is an optional string
+    change_request_url: "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+    
+    # repositories is an optional list of maps
+    # each repository requires 'name' and 'url'
+    # 'branch' and 'commit_sha' are optional
+    repositories:
+    - name: "${GITHUB_REPOSITORY}"
+      url: "https://github.com/${GITHUB_REPOSITORY}"
+      branch: "${GITHUB_REF_NAME}"
+      commit_sha: "${GITHUB_SHA}"
+    
+    # services is an optional list of maps
+    # the keys 'type' and 'name' are required
+    # the key 'properties' is an optional map of any key-value pairs 
+    # currently only the type "app_access_point" is supported
+    services:
+    - type: "app_access_point"
+      name: "concert-demo"
+      properties: 
+        base_url: "https://concert-demo.example.com"
+        network_exposure: "public"
+        port: "3000"
+    
+    # runtime is an optional list of maps
+    # the keys 'name' and 'type' are required
+    # the key 'properties' is an optional map of any key-value pairs 
+    runtime:
+      # type "kubernetes" supports additional parameters: 'api-server', 'namespaces', 'depends_on'
+    - name: "kubernetes-cluster"
+      type: "kubernetes"
+      
+      # the key 'depends_on' is an optional list of service names that depend on this
+      depends_on: 
+      - "concert-demo"
+      
+      properties:
+        platform: "kubernetes"
+        cluster_platform: "cloud"
+        cluster_id: "default-cluster"
+        cluster_region: "us-east-1"
+        cluster_name: "production-cluster"
+      
+      # api-server is a required string specifically for type "kubernetes"
+      api-server: "https://kubernetes.default.svc"
+      
+      # namespaces is an optional list of maps specifically for type "kubernetes"
+      namespaces:
+        # name is required
+      - name: "default"
+        
+        # images is an optional list of maps
+        # 'name' is always required
+        # either 'tag' OR 'digest' is required
+        images:
+        - name: "${IMAGE_NAME}"
+          tag: "${IMAGE_TAG}"
+          digest: ""  # Will be populated after image is pushed
+        
+        # libraries is an optional list of maps (if any runtime libraries are deployed)
+        # 'name' and 'version' are required
+        # 'purl', 'scope', 'filename', and 'url' are optional
+        libraries: []
+
+# Made with Bob
