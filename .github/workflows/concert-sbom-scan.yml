@@ -135,9 +135,24 @@ jobs:
           # Substitute environment variables in config files
           envsubst < concert/build-config.yaml > toolkit-data/build-config.yaml
           envsubst < concert/deploy-config.yaml > toolkit-data/deploy-config.yaml
+          envsubst < concert/app-config.yaml > toolkit-data/app-config.yaml
           
           echo "Toolkit data prepared:"
           ls -lh toolkit-data/
+
+      #################################################
+      # Generate Application SBOM
+      #################################################
+      - name: Generate Application SBOM
+        run: |
+          docker run --rm \
+            -v $(pwd)/toolkit-data:/toolkit-data \
+            icr.io/cpopen/ibm-concert-toolkit:$CONCERT_TOOLKIT_VERSION \
+            /bin/bash -c \
+            "app-sbom --app-config /toolkit-data/app-config.yaml"
+          
+          echo "Application SBOM generated:"
+          ls -lh toolkit-data/*.json
 
       #################################################
       # Generate Build SBOM
@@ -167,6 +182,7 @@ jobs:
           echo "Deploy SBOM generated:"
           ls -lh toolkit-data/*.json
 
+
       #################################################
       # Upload Artifacts
       #################################################
@@ -193,14 +209,20 @@ jobs:
           echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Generated Artifacts" >> $GITHUB_STEP_SUMMARY
-          echo "- CycloneDX SBOM" >> $GITHUB_STEP_SUMMARY
+          echo "- CycloneDX SBOM (Syft)" >> $GITHUB_STEP_SUMMARY
           echo "- Grype Vulnerability Report" >> $GITHUB_STEP_SUMMARY
           echo "- IBM Concert Build SBOM" >> $GITHUB_STEP_SUMMARY
           echo "- IBM Concert Deploy SBOM" >> $GITHUB_STEP_SUMMARY
+          echo "- IBM Concert Application SBOM" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Security Checks" >> $GITHUB_STEP_SUMMARY
           echo "✅ Image built and scanned" >> $GITHUB_STEP_SUMMARY
           echo "✅ Image signed with Cosign" >> $GITHUB_STEP_SUMMARY
-          echo "✅ SBOMs generated for Concert" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All SBOMs generated for Concert" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### SBOM Correlation" >> $GITHUB_STEP_SUMMARY
+          echo "- Build SBOM: Links to source code and container image" >> $GITHUB_STEP_SUMMARY
+          echo "- Deploy SBOM: Links to deployment environment and runtime" >> $GITHUB_STEP_SUMMARY
+          echo "- App SBOM: Correlates build and deploy with application services" >> $GITHUB_STEP_SUMMARY
 
 # Made with Bob

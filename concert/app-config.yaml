@@ -1,0 +1,77 @@
+##########################################################################
+# © IBM Confidential
+# PID:  5900-BD6, 5900-BBE
+# © Copyright IBM Corp. 2024
+##########################################################################
+# IBM Concert Application SBOM Configuration
+# This file defines the application-level SBOM for Concert Demo
+# spec_version is a required string
+# spec_version currently accepts: ["1.0.2"]
+spec_version: "1.0.2"
+
+concert:
+  # app is a required map
+  app:
+    # output_file is an optional string (default: <app_name>-app-sbom.json)
+    # the absolute path to output_file inside the container will be /toolkit-data/<output_file>
+    output_file: "concert-app-sbom.json"
+    
+    # app_name is a required string
+    app_name: "concert-demo"
+    
+    # version is a required string
+    version: "1.0.0"
+    
+    # business is a required map
+    business:
+      # name is required
+      name: "Your Organization"
+      # units is a list of unit configurations
+      units:
+      - name: "DevSecOps Team"
+        email: "devsecops@example.com"
+        phone: "+1 (555) 123-4567"
+    
+    # properties is an optional map of any key-value pairs
+    properties:
+      application_criticality: "3"
+      compliance_required: "true"
+      data_classification: "internal"
+      deployment_type: "containerized"
+    
+    # components is a required list of maps
+    components:
+    - component_name: "concert-demo"
+      version: "1.0.0"
+      
+      # repositories is an optional list of maps
+      repositories:
+      - name: "${GITHUB_REPOSITORY}"
+        url: "https://github.com/${GITHUB_REPOSITORY}"
+      
+      # image is an optional map
+      image:
+        name: "${IMAGE_NAME}"
+        tag: "${IMAGE_TAG}"
+    
+    # environment_targets is a required list of "name" strings
+    environment_targets:
+    - name: "production"
+    
+    # services is an optional list of maps
+    services:
+    - name: "concert-demo-api"
+      type: "app_end_point"
+      properties:
+        network_exposure: "public"
+        protocol: "http"
+        port: "3000"
+      endpoints:
+      - "/"
+      - "/health"
+      - "/ready"
+      - "/info"
+      reliant_by:
+      - "concert-demo"
+
+# Made with Bob
