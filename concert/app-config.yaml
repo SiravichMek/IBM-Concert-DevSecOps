@@ -10,8 +10,8 @@
 spec_version: "1.0.2"
 
 concert:
-  # app is a required map
-  app:
+  # application is a required list of maps
+  application:
     # output_file is an optional string (default: <app_name>-app-sbom.json)
     # the absolute path to output_file inside the container will be /toolkit-data/<output_file>
     output_file: "concert-app-sbom.json"
@@ -35,9 +35,6 @@ concert:
     # properties is an optional map of any key-value pairs
     properties:
       application_criticality: "3"
-      compliance_required: "true"
-      data_classification: "internal"
-      deployment_type: "containerized"
     
     # components is a required list of maps
     components:
@@ -52,7 +49,6 @@ concert:
       # image is an optional map
       image:
         name: "${IMAGE_NAME}"
-        tag: "${IMAGE_TAG}"
     
     # environment_targets is a required list of "name" strings
     environment_targets:
@@ -64,8 +60,6 @@ concert:
       type: "app_end_point"
       properties:
         network_exposure: "public"
-        protocol: "http"
-        port: "3000"
       endpoints:
       - "/"
       - "/health"
